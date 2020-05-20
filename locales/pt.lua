@@ -7,6 +7,7 @@ Locales['pt'] = {
   ['tattoo_shop']        = 'Loja de tatuagens',
   ['bought_tattoo']      = 'Tu compraste uma ~y~tatuagem~s~ por ~r~$%s~s~',
   ['not_enough_money']   = 'Tu não tens ~r~dinheiro suficiente~s~ para aquela tatuagem! Está faltando ~r~$%s~s~',
+  ['not_enough_money_dirty']   = 'Tu não tens ~r~dinheiro suficiente~s~ para aquela tatuagem! Está faltando ~r~$%s~s~',
   
   ['business']  = 'Negocios',
 	['hipster']  = 'Hipster',

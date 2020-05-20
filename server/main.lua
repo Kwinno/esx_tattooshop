@@ -40,3 +40,27 @@ ESX.RegisterServerCallback('esx_tattooshop:purchaseTattoo', function(source, cb,
 		cb(false)
 	end
 end)
+
+ESX.RegisterServerCallback('esx_tattooshop:purchaseIllegalTattoo', function(source, cb, tattooList, price, tattoo)
+	local xPlayer = ESX.GetPlayerFromId(source)
+	local amount_dirty = xPlayer.getAccount('black_money').money
+
+	
+
+	if amount_dirty >= price then
+		xPlayer.removeAccountMoney('black_money', price)
+		table.insert(tattooList, tattoo)
+
+		MySQL.Async.execute('UPDATE users SET tattoos = @tattoos WHERE identifier = @identifier', {
+			['@tattoos'] = json.encode(tattooList),
+			['@identifier'] = xPlayer.identifier
+		})
+
+		TriggerClientEvent('esx:showNotification', source, _U('bought_tattoo', ESX.Math.GroupDigits(price)))
+		cb(true)
+	else
+		local missingMoney = price - amount_dirty
+		TriggerClientEvent('esx:showNotification', source, _U('not_enough_money_dirty', ESX.Math.GroupDigits(missingMoney)))
+		cb(false)
+	end
+end)

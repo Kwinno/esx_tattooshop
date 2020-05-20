@@ -636,23 +636,28 @@ Config.TattooList = {
 }
 
 Config.TattooCategories = {
-	{name = _U('business'), value = 'mpbusiness_overlays'},
-	{name = _U('hipster'), value = 'mphipster_overlays'},
-	{name = _U('biker'), value = 'mpbiker_overlays'},
-	{name = _U('airraces'), value = 'mpairraces_overlays'},
-	{name = _U('beach'), value = 'mpbeach_overlays'},
-	{name = _U('gunrunning'), value = 'mpgunrunning_overlays'},
-	{name = _U('importexport'), value = 'mpimportexport_overlays'},
-	{name = _U('lowride'), value = 'mplowrider_overlays'},
-	{name = _U('lowrider2'), value = 'mplowrider2_overlays'},
-	{name = _U('luxe'), value = 'mpluxe_overlays'},
-	{name = _U('luxe2'), value = 'mpluxe2_overlays'},
-	{name = _U('multiplayer'), value = 'multiplayer_overlays'},
-	--{name = _U('vinewood'), value = 'mpvinewood_overlays'}, <--- Dosen't work
-	{name = _U('stunt'), value = 'mpstunt_overlays'},
-	{name = _U('smuggler'), value = 'mpsmuggler_overlays'},
-	--{name = _U('heist3'), value = 'mpheist3_overlays'},<--- Need fivem to update
-	{name = _U('christmas2'), value = 'mpchristmas2_overlays'},
-	{name = _U('christmas2017'), value = 'mpchristmas2017_overlays'},
-	{name = _U('christmas2018'), value = 'mpchristmas2018_overlays'}
+	Shops = {
+		{name = _U('business'), value = 'mpbusiness_overlays'},
+		{name = _U('hipster'), value = 'mphipster_overlays'},
+		{name = _U('biker'), value = 'mpbiker_overlays'},
+		{name = _U('airraces'), value = 'mpairraces_overlays'},
+		{name = _U('beach'), value = 'mpbeach_overlays'},
+		{name = _U('gunrunning'), value = 'mpgunrunning_overlays'},
+		{name = _U('importexport'), value = 'mpimportexport_overlays'},
+		{name = _U('lowride'), value = 'mplowrider_overlays'},
+		{name = _U('lowrider2'), value = 'mplowrider2_overlays'},
+		{name = _U('luxe'), value = 'mpluxe_overlays'},
+		{name = _U('luxe2'), value = 'mpluxe2_overlays'},
+		{name = _U('multiplayer'), value = 'multiplayer_overlays'},
+		--{name = _U('vinewood'), value = 'mpvinewood_overlays'}, <--- Dosen't work
+		{name = _U('stunt'), value = 'mpstunt_overlays'},
+		{name = _U('smuggler'), value = 'mpsmuggler_overlays'}
+		--{name = _U('heist3'), value = 'mpheist3_overlays'},<--- Need fivem to update
+	},
+	Illegal = {
+		{name = _U('christmas2'), value = 'mpchristmas2_overlays'},
+		{name = _U('christmas2017'), value = 'mpchristmas2017_overlays'},
+		{name = _U('christmas2018'), value = 'mpchristmas2018_overlays'}
+	}
+
 }

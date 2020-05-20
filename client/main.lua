@@ -23,9 +23,7 @@ end)
 
 function OpenShopMenu()
 	local elements = {}
-	
-
-	for k,v in pairs(Config.TattooCategories) do
+	for k,v in pairs(Config.TattooCategories.Shops) do
 		table.insert(elements, {label= v.name, value = v.value})
 	end
 
@@ -93,8 +91,78 @@ function OpenShopMenu()
 	end)
 end
 
+function OpenIllegalShopMenu()
+	local elements = {}
+	for k,v in pairs(Config.TattooCategories.Illegal) do
+		table.insert(elements, {label= v.name, value = v.value})
+	end
+
+	if DoesCamExist(cam) then
+		RenderScriptCams(false, false, 0, 1, 0)
+		DestroyCam(cam, false)
+	end
+
+	ESX.UI.Menu.Open('default', GetCurrentResourceName(), 'tattoo_shop_illegal', {
+		title    = _U('tattoos'),
+		align    = 'bottom-right',
+		elements = elements
+	}, function(data, menu)
+		local currentLabel, currentValue = data.current.label, data.current.value
+
+		if data.current.value then
+			elements = {{label = _U('go_back_to_menu'), value = nil}}
+
+			for k,v in pairs(Config.TattooList[data.current.value]) do
+				table.insert(elements, {
+					label = ('%s - <span style="color:green;">%s EUR</span>'):format(v.name, ESX.Math.GroupDigits(v.price)),
+					value = k,
+					price = v.price
+				})
+			end
+
+			ESX.UI.Menu.Open('default', GetCurrentResourceName(), 'tattoo_shop_categories', {
+                title    = _U('tattoos') .. ' | '..currentLabel,
+                align    = 'bottom-right',
+                elements = elements
+            }, function(data2, menu2)
+                local price = data2.current.price
+
+                if data2.current.value ~= nil then
+
+                    ESX.TriggerServerCallback('esx_tattooshop:purchaseIllegalTattoo', function(success)
+                        if success then
+                            table.insert(currentTattoos, {collection = currentValue, texture = data2.current.value})
+                        end
+                    end, currentTattoos, price, {collection = currentValue, texture = data2.current.value})
+
+                else
+                    OpenIllegalShopMenu()
+                    RenderScriptCams(false, false, 0, 1, 0)
+                    DestroyCam(cam, false)
+                    cleanPlayer()
+                end
+
+			end, function(data2, menu2)
+				menu2.close()
+				RenderScriptCams(false, false, 0, 1, 0)
+				DestroyCam(cam, false)
+				setPedSkin()
+			end, function(data2, menu2) -- when highlighted
+				if data2.current.value ~= nil then
+					drawTattoo(data2.current.value, currentValue)
+				end
+			end)
+		end
+	end, function(data, menu)
+                local playerPed = PlayerPedId()
+		menu.close()
+                FreezeEntityPosition(playerPed, false)
+		setPedSkin()
+	end)
+end
+
 Citizen.CreateThread(function()
-	for k,v in pairs(Config.Zones) do
+	for k,v in pairs(Config.Zones.Shops) do
 		local blip = AddBlipForCoord(v)
 		SetBlipSprite(blip, 75)
 		SetBlipColour(blip, 1)
@@ -112,7 +180,7 @@ Citizen.CreateThread(function()
 		Citizen.Wait(0)
 		local coords, letSleep = GetEntityCoords(PlayerPedId()), true
 
-		for k,v in pairs(Config.Zones) do
+		for k,v in pairs(Config.Zones.Shops) do
 			if (Config.Type ~= -1 and GetDistanceBetweenCoords(coords, v, true) < Config.DrawDistance) then
 				DrawMarker(Config.Type, v, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Config.Size.x, Config.Size.y, Config.Size.z, Config.Color.r, Config.Color.g, Config.Color.b, 100, false, true, 2, false, false, false, false)
 				letSleep = false
@@ -134,14 +202,20 @@ Citizen.CreateThread(function()
 		local isInMarker = false
 		local currentZone, LastZone
 
-		for k,v in pairs(Config.Zones) do
+		for k,v in pairs(Config.Zones.Shops) do
 			if GetDistanceBetweenCoords(coords, v, true) < Config.Size.x then
 				isInMarker  = true
 				currentZone = 'TattooShop'
 				LastZone    = 'TattooShop'
 			end
 		end
-
+		for k,v in pairs(Config.Zones.Illegal) do
+			if GetDistanceBetweenCoords(coords, v, true) < Config.Size.x then
+				isInMarker  = true
+				currentZone = 'TattooShopIllegal'
+				LastZone    = 'TattooShopIllegal'
+			end
+		end
 		if isInMarker and not HasAlreadyEnteredMarker then
 			HasAlreadyEnteredMarker = true
 			TriggerEvent('esx_tattooshop:hasEnteredMarker', currentZone)
@@ -157,6 +231,10 @@ end)
 AddEventHandler('esx_tattooshop:hasEnteredMarker', function(zone)
 	if zone == 'TattooShop' then
 		CurrentAction     = 'tattoo_shop'
+		CurrentActionMsg  = _U('tattoo_shop_prompt')
+		CurrentActionData = {zone = zone}
+	elseif zone == 'TattooShopIllegal' then
+		CurrentAction     = 'tattoo_shop_illegal'
 		CurrentActionMsg  = _U('tattoo_shop_prompt')
 		CurrentActionData = {zone = zone}
 	end
@@ -180,7 +258,11 @@ Citizen.CreateThread(function()
                     local playerPed = PlayerPedId()
                     FreezeEntityPosition(playerPed, true)
                     OpenShopMenu()
-                end
+				elseif CurrentAction == 'tattoo_shop_illegal' then
+                    local playerPed = PlayerPedId()
+                    FreezeEntityPosition(playerPed, true)
+                    OpenIllegalShopMenu()
+				end
                 CurrentAction = nil
             end
         else
